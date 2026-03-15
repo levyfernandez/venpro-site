@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react"
 
@@ -568,7 +568,7 @@ export default function VenproGroupSite() {
                   <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
                     <div className="text-white/50">Corporate Email</div>
                     <div className="mt-2 text-base font-medium">
-                      info@venprogroup.com
+                      contact@venprogroup.com
                     </div>
                   </div>
 
