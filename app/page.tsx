@@ -10,6 +10,19 @@ type Section = {
   description: string
 }
 
+type FormState = {
+  name: string
+  email: string
+  message: string
+}
+
+type SubmitStatus =
+  | null
+  | {
+      type: "success" | "error"
+      text: string
+    }
+
 export default function VenproGroupSite() {
   const sections: Section[] = useMemo(
     () => [
@@ -45,10 +58,76 @@ export default function VenproGroupSite() {
   const [scrolled, setScrolled] = useState(false)
   const shellRef = useRef<HTMLElement | null>(null)
 
+  const [form, setForm] = useState<FormState>({
+    name: "",
+    email: "",
+    message: "",
+  })
+
+  const [sending, setSending] = useState(false)
+  const [status, setStatus] = useState<SubmitStatus>(null)
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id)
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (sending) return
+
+    setStatus(null)
+    setSending(true)
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "No se pudo enviar el mensaje.")
+      }
+
+      setStatus({
+        type: "success",
+        text: "Your message was sent successfully.",
+      })
+
+      setForm({
+        name: "",
+        email: "",
+        message: "",
+      })
+    } catch (error) {
+      setStatus({
+        type: "error",
+        text:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred.",
+      })
+    } finally {
+      setSending(false)
     }
   }
 
@@ -508,27 +587,54 @@ export default function VenproGroupSite() {
                   </div>
                 </div>
 
-                <form className="mt-8 space-y-4">
+                <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
                   <input
                     type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
                     placeholder="Name"
+                    autoComplete="name"
                     className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none transition focus:border-[#4092b7] focus:bg-white/15"
                   />
+
                   <input
                     type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
                     placeholder="Email"
+                    autoComplete="email"
                     className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none transition focus:border-[#4092b7] focus:bg-white/15"
                   />
+
                   <textarea
                     rows={5}
+                    name="message"
+                    value={form.message}
+                    onChange={handleChange}
                     placeholder="Message"
                     className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none transition focus:border-[#4092b7] focus:bg-white/15"
                   />
+
+                  {status && (
+                    <p
+                      className={`text-sm ${
+                        status.type === "success"
+                          ? "text-green-300"
+                          : "text-red-300"
+                      }`}
+                    >
+                      {status.text}
+                    </p>
+                  )}
+
                   <button
-                    type="button"
-                    className="w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#565757] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(255,255,255,0.12)]"
+                    type="submit"
+                    disabled={sending}
+                    className="w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#565757] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(255,255,255,0.12)] disabled:cursor-not-allowed disabled:opacity-70"
                   >
-                    Send inquiry
+                    {sending ? "Sending..." : "Send inquiry"}
                   </button>
                 </form>
               </div>
