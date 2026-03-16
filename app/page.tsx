@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 type Section = {
@@ -282,27 +283,16 @@ export default function VenproGroupSite() {
             onClick={() => scrollToSection("home")}
             className="flex items-center gap-3 text-left transition hover:opacity-90"
           >
-            <div
-              className={`relative transition-all duration-500 ${
-                scrolled ? "h-7 w-7" : "h-8 w-8"
-              }`}
-            >
-              <div className="absolute left-0 top-0 h-full w-1/2 -skew-x-[28deg] rounded-[1px] bg-[#4092b7]" />
-              <div className="absolute left-1/2 top-0 h-[42%] w-[30%] -skew-x-[28deg] rounded-[1px] bg-[#d5b647]" />
-            </div>
-
-            <div>
-              <div className="text-[10px] font-medium uppercase tracking-[0.35em] text-[#9a9a9a]">
-                Venpro
-              </div>
-              <div
-                className={`font-semibold tracking-[0.24em] text-[#565757] transition-all duration-500 ${
-                  scrolled ? "text-xs" : "text-sm"
-                }`}
-              >
-                GROUP
-              </div>
-            </div>
+            <Image
+  src="/venpro-logo.png"
+  alt="Venpro Group"
+  width={300}
+  height={80}
+  priority
+  className={`w-auto origin-left transition-all duration-500 ${
+    scrolled ? "h-10 scale-[2]" : "h-12 scale-[3]"
+  }`}
+/>
           </button>
 
           <nav className="hidden items-center gap-2 md:flex">
@@ -482,7 +472,7 @@ export default function VenproGroupSite() {
                   key={service.title}
                   className="glass rounded-[2rem] border border-white/85 p-7 shadow-[0_18px_55px_rgba(0,0,0,0.05)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(0,0,0,0.08)]"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-6">
                     <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#9c9c9c]">
                       0{index + 1}
                     </div>
